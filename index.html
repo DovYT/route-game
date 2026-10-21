@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>המסלול הבטוח שלי</title>
+<style>
+:root{--y:#f5b800;--b:#1f6fd1;--g:#2e9e5b;--o:#f27a1a;--ink:#1d2a3a;--bg:#fffaf0;--card:#fff;--line:#e6dcc6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f3efe4;--bg:#16202c;--card:#1f2c3b;--line:#34465b}}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Heebo","Assistant",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+.wrap{max-width:900px;margin:auto;padding:14px}
+h1,h2,h3{margin:.3em 0}
+.hero{text-align:center;padding:30px 12px;background:linear-gradient(135deg,var(--y),var(--o));border-radius:24px;color:#1d2a3a;position:relative;overflow:hidden}
+.hero h1{font-size:2.4rem}
+.road{height:26px;margin:18px -12px -30px;background:repeating-linear-gradient(90deg,#fff 0 30px,transparent 30px 60px) center/100% 4px no-repeat,#3b4553}
+.ico{font-size:2.2rem;display:inline-block;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.btn{border:0;border-radius:14px;padding:11px 18px;font:inherit;font-weight:700;cursor:pointer;background:var(--b);color:#fff;margin:3px}
+.btn.o{background:var(--o)}.btn.g{background:var(--g)}.btn.w{background:var(--card);color:var(--ink);border:2px solid var(--line)}.btn.big{font-size:1.2rem;padding:14px 28px}
+.btn.s{padding:5px 10px;font-size:.85rem}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:14px;margin:12px 0}
+label{display:block;font-weight:700;margin:10px 0 3px}
+input,select,textarea{width:100%;font:inherit;padding:9px;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+textarea{min-height:70px}
+.steps{display:flex;gap:6px;margin:12px 0}.steps div{flex:1;text-align:center;padding:6px;border-radius:10px;background:var(--line);font-size:.85rem}.steps .on{background:var(--b);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{padding:6px 12px;border-radius:20px;border:2px solid var(--line);background:var(--card);cursor:pointer;font:inherit;color:var(--ink)}.chip.on{background:var(--g);color:#fff;border-color:var(--g)}
+.err{color:#c0392b;font-weight:700}
+.tag{display:inline-block;padding:2px 10px;border-radius:12px;color:#fff;font-size:.8rem}
+.k-road{background:#c99700}.k-access{background:var(--b)}.k-health{background:var(--g)}.k-move,.k-search{background:var(--o)}
+.num{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--y);color:#1d2a3a;font-weight:800}
+.bar{height:16px;background:var(--line);border-radius:10px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--g),var(--y));transition:width .5s}
+.opt{display:block;width:100%;text-align:right;margin:6px 0}
+.ok{background:var(--g)!important;color:#fff!important}.no{background:#c0392b!important;color:#fff!important}
+.cert{border:8px double var(--y);padding:24px;text-align:center;border-radius:12px;background:var(--card)}
+.pop{animation:pop .5s}@keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+#print{display:none}
+@media print{body{background:#fff;color:#000}#app{display:none}#print{display:block}.pg{page-break-after:always;break-inside:avoid;padding:10mm;border:3px solid #f5b800;border-radius:12px;margin-bottom:6mm}.pg:last-child{page-break-after:auto}.line{border-bottom:1px solid #000;height:9mm}@page{size:A4;margin:10mm}}
+.pg{background:#fff;color:#000}
+</style>
+</head>
+<body>
+<div id="app" class="wrap"></div>
+<div id="print"></div>
+<script>
+const PLACES=["שער הכניסה","חצר בית הספר","ספרייה","מסדרון","מדרגות","מגרש ספורט","גינה","אמפי","קפיטריה","אולם ספורט","פינת ישיבה","רחבת טקסים"];
+const GR=["א׳","ב׳","ג׳","ד׳","ה׳","ו׳"];
+const KN={road:"זהירות בדרכים",access:"נגישות",health:"אורח חיים בריא",move:"תנועה",search:"חיפוש"};
+const CATS=["road","access","health","search","move","road","access","health","move","search"];
+const T={
+road:[
+ p=>({title:"צבעי הרמזור",text:"הגעתם ל"+p+". מה צבע הרמזור שאומר להולכי רגל לעצור?",opts:["אדום","ירוק","צהוב"],ci:0,fact:"הרמזור הראשון בעולם הותקן בלונדון בשנת 1868."}),
+ p=>({title:"חוצים בבטחה",text:"בדרך מ"+p+" אל התחנה הבאה: איפה חוצים כביש בבטחה?",opts:["במעבר חציה","בין מכוניות חונות","באמצע הכביש"],ci:0,fact:"במעבר חציה הנהגים חייבים לעצור להולכי רגל."}),
+ p=>({title:"עוצרים, מסתכלים, מקשיבים",text:"מה עושים לפני שחוצים כביש?",opts:["עוצרים, מסתכלים לשני הצדדים ומקשיבים","רצים מהר","מסתכלים בטלפון"],ci:0,fact:"ילדים בולטים פחות לנהגים, ולכן חשוב להיות קשובים."}),
+ p=>({title:"חפשו סימן בטיחות",text:"בסביבת "+p+" חפשו סימן, צבע או שלט שקשור לבטיחות. ציירו או כתבו מה מצאתם.",opts:null,answer:"תשובה פתוחה — הרכזת משלימה לפי המקום",fact:"סימנים וצבעים עוזרים לכולם להבין מה מותר ומה אסור."})],
+access:[
+ p=>({title:"דרך נגישה",text:"עמדו ב"+p+". איך אדם בכיסא גלגלים היה מגיע לכאן? האם יש מכשול בדרך? כתבו או ציירו.",opts:null,answer:"תשובה פתוחה — הרכזת משלימה לפי המקום",fact:"מקום נגיש הוא מקום שמתאים לכולם."}),
+ p=>({title:"מה עוזר?",text:"מה עוזר לאדם בכיסא גלגלים לעלות לכניסה לבניין?",opts:["רמפה","עוד מדרגות","חול"],ci:0,fact:"הסמל הבינלאומי לנגישות הוא דמות על כיסא גלגלים."}),
+ p=>({title:"שמים לב לכולם",text:"ב"+p+": מה עושים כשרואים חפץ שחוסם את הדרך לכולם?",opts:["מזיזים או מדווחים למבוגר","מדלגים עליו","משאירים"],ci:0,fact:"דרך פנויה עוזרת גם להורים עם עגלות ולאנשים מבוגרים."})],
+health:[
+ p=>({title:"שותים מים",text:"מה הכי טוב לשתות אחרי פעילות גופנית?",opts:["מים","משקה ממותק","קולה"],ci:0,fact:"גוף האדם מורכב ברובו ממים."}),
+ p=>({title:"נשימה ואיזון",text:"ב"+p+" עמדו במקום, שאפו עמוק דרך האף ונשפו לאט 5 פעמים. איך הרגשתם?",opts:null,answer:"תשובה אישית",fact:"נשימות עמוקות עוזרות להתרכז ולהירגע."}),
+ p=>({title:"תנועה כל יום",text:"כמה זמן ביום כדאי שילדים יזוזו?",opts:["לפחות שעה","5 דקות","אין צורך"],ci:0,fact:"תנועה מחזקת את הלב, את העצמות ואת מצב הרוח."})],
+move:[
+ p=>({title:"הליכת איזון",text:"ב"+p+" בצעו 10 צעדים איטיים 'עקב־בהונה' בזהירות, ללא ריצה. סמנו כשסיימתם.",opts:null,answer:"בוצע",fact:"איזון הוא כישור שמתאמנים בו."}),
+ p=>({title:"עומדים על רגל אחת",text:"עמדו על רגל אחת 10 שניות, ואז החליפו רגל. אפשר להיעזר בחבר.",opts:null,answer:"בוצע",fact:"בכל פעולה בטוחה מתחילים בתשומת לב."}),
+ p=>({title:"מתיחות עדינות",text:"בצעו שלוש מתיחות עדינות של ידיים וכתפיים, בלי לרוץ ובלי לקפוץ.",opts:null,answer:"בוצע",fact:"מתיחות מכינות את הגוף לתנועה."})],
+search:[
+ p=>({title:"צבעים בסביבה",text:"מצאו ב"+p+" שלושה דברים בצבעים שונים מפלטת הצבעים של המשחק (צהוב, כחול, ירוק, כתום) וכתבו מה מצאתם.",opts:null,answer:"תשובה פתוחה — הרכזת משלימה לפי המקום",fact:"צבעים בהירים עוזרים לראות סימנים מרחוק."}),
+ p=>({title:"ספירה",text:"ספרו כמה ילדים או חפצים של בית הספר אפשר לראות מהתחנה ורשמו את המספר.",opts:null,answer:"תשובה פתוחה",fact:"התבוננות היא הצעד הראשון בלמידה."}),
+ p=>({title:"חפשו כתובת",text:"חפשו בסביבת "+p+" שלט או כתובת. הרכזת: אפשר להשלים כאן מה כתוב בפועל.",opts:null,answer:"הרכזת משלימה לפי המקום",fact:"שלטים עוזרים לנו למצוא את הדרך."})]};
+function gen(p,i,grade,avoid){const c=CATS[i%CATS.length],pool=T[c];let j=Math.floor(Math.random()*pool.length);if(avoid&&pool.length>1)while(pool[j](p).title===avoid)j=Math.floor(Math.random()*pool.length);
+ const t=pool[j](p);t.kind=c;if(t.opts&&grade<=1)t.text+=" (בעזרת מבוגר)";if(t.opts)t.answer=t.opts[t.ci];return t}
+const E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const blank=()=>({school:"",city:"",grade:"ד׳",coord:"",title:"המסלול הבטוח שלי",logo:"",n:6,st:[]});
+function load(){try{return JSON.parse(localStorage.getItem("msl")||"null")}catch(e){return null}}
+function save(){try{localStorage.setItem("msl",JSON.stringify(S.g))}catch(e){}}
+const S={v:"home",step:1,g:load()||blank(),p:0,done:[],err:"",sel:null};
+const gi=()=>GR.indexOf(S.g.grade);
+function sample(){S.g={school:"בית ספר הדוגמה",city:"חיפה",grade:"ד׳",coord:"רכזת לדוגמה",title:"המסלול הבטוח שלי",logo:"",st:[]};
+ ["שער הכניסה","ספרייה","חצר בית הספר","מגרש ספורט","גינה","קפיטריה"].forEach((p,i)=>S.g.st.push({place:p,desc:"",task:gen(p,i,3)}));save();S.v="game";S.err=""}
+function go(v,s){S.v=v;if(s)S.step=s;S.err="";R()}
+function addPlace(p){p=p.trim();if(!p)return;const k=S.g.st.findIndex(x=>x.place===p);if(k>=0)S.g.st.splice(k,1);else if(S.g.st.length<(S.g.n||12))S.g.st.push({place:p,desc:"",task:null});else S.err="בחרתם כבר "+(S.g.n||12)+" תחנות. אפשר להסיר תחנה או להגדיל את המספר בשלב 1";save();R()}
+function next(){const g=S.g;S.err="";
+ if(S.step===1&&(!g.school.trim()||!g.city.trim())){S.err="נא למלא שם בית ספר ויישוב";return R()}
+ if(S.step===2){const n=g.n||g.st.length;if(g.st.length!==n){S.err="נבחרו "+g.st.length+" תחנות, אך הוגדרו "+n+". השלימו או הסירו תחנות, או שנו את המספר בשלב 1";return R()}g.st.forEach((s,i)=>{if(!s.task)s.task=gen(s.place,i,gi())})}
+ save();if(S.step===3){S.v="game"}else S.step++;R()}
+function mv(i,d){const a=S.g.st,j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];save();R()}
+function del(i){if(confirm("למחוק את התחנה?")){S.g.st.splice(i,1);save();R()}}
+function regen(i){const s=S.g.st[i];s.task=gen(s.place,i,gi(),s.task&&s.task.title);save();R()}
+function upd(i,f,v){const t=S.g.st[i].task;if(f==="desc")S.g.st[i].desc=v;else t[f]=v;save()}
+function newPlace(){const e=document.getElementById("fp");addPlace(e.value);}
+function logo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{S.g.logo=r.result;save();R()};r.readAsDataURL(f)}
+function exp(){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(S.g)],{type:"application/json"}));a.download="route-game.json";a.click()}
+function imp(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.st)throw 0;S.g=d;save();S.v="game";R()}catch(x){alert("הקובץ אינו תקין")}};r.readAsText(f)}
+function logoH(){return S.g.logo?`<img src="${S.g.logo}" style="max-height:70px">`:""}
+function prnt(m){const g=S.g;let h="";
+ if(m==="book"){h+=`<div class="pg" style="text-align:center"><div style="font-size:60px">🚦</div>${logoH()}<h1>${E(g.title)}</h1><h2>${E(g.school)} · ${E(g.city)}</h2><p>שכבה ${E(g.grade)} · רכזת/ן: ${E(g.coord)}</p><p>משרד החינוך | מחוז חיפה</p></div>
+ <div class="pg"><h2>כללי המשחק</h2><ol><li>הולכים, לא רצים — במיוחד במסדרונות ובמדרגות.</li><li>עובדים בקבוצות ושומרים זה על זה.</li><li>שומרים על הסביבה ולא משאירים אשפה.</li><li>מתקדמים לתחנה הבאה רק אחרי שפותרים.</li></ol></div>`}
+ g.st.forEach((s,i)=>{if(m==="ans")return;const t=s.task;h+=`<div class="pg"><h2>תחנה ${i+1}: ${E(s.place)}</h2>${s.desc?`<p>🔎 רמז: ${E(s.desc)}</p>`:""}<h3>${E(t.title)}</h3><p>${E(t.text)}</p>${t.opts?t.opts.map(o=>`<p>☐ ${E(o)}</p>`).join(""):'<div class="line"></div><div class="line"></div>'}<p><b>הידעת?</b> ${E(t.fact)}</p></div>`});
+ if(m==="ans")h=`<div class="pg"><h2>דף תשובות למורה</h2><ol>${g.st.map(s=>`<li><b>${E(s.place)}</b> — ${E(s.task.title)}: ${E(s.task.answer)}</li>`).join("")}</ol></div>`;
+ if(m==="book")h+=`<div class="pg" style="text-align:center"><h1>🏆 אלופי המסלול הבטוח</h1><p>תעודה לתלמיד/ה: ____________</p><p>${E(g.school)}</p></div>`;
+ document.getElementById("print").innerHTML=h;setTimeout(()=>window.print(),150)}
+function pick(i,k){const t=S.g.st[S.p].task;if(S.done[S.p])return;if(k===t.ci){S.done[S.p]=1;S.msg="🎉 כל הכבוד!"}else S.msg="נסו שוב 🙂";S.bad=k;R()}
+function fin(){S.done[S.p]=1;S.msg="🎉 כל הכבוד!";R()}
+function nextSt(){S.p++;S.msg="";S.bad=-1;R()}
+function R(){const g=S.g,a=document.getElementById("app");let h="";
+ if(S.v==="home"){h=`<div class="hero"><span class="ico">🚦</span><span class="ico">🔍</span><span class="ico">🧒</span><h1>המסלול הבטוח שלי</h1><p>משרד החינוך | מחוז חיפה · זהירות בדרכים, נגישות ואורח חיים בריא</p><p style="font-size:1.15rem">כל בית ספר הוא עולם של הרפתקאות. בואו להפוך את המרחבים שלכם למשחק!</p><button class="btn big o" onclick="S.g=blank();go('wiz',1)">יוצרים מסלול חדש</button><button class="btn big w" onclick="sample();R()">נסה משחק לדוגמה</button><div class="road"></div></div>
+ <div class="card"><h3>משחק שמור או קובץ</h3>${g.st.length?`<button class="btn g" onclick="go('game')">המשך למשחק השמור: ${E(g.school)}</button>`:""}<label class="btn w" style="display:inline-block">טעינת קובץ JSON<input type="file" accept=".json" hidden onchange="imp(event)"></label></div>`}
+ if(S.v==="wiz"){h=`<h2>🚦 יצירת מסלול</h2><div class="steps">${["פרטים","מקומות","משימות"].map((n,i)=>`<div class="${S.step===i+1?"on":""}">${i+1}. ${n}</div>`).join("")}</div><div class="card">`;
+  if(S.step===1)h+=`<label>שם בית הספר *</label><input value="${E(g.school)}" oninput="g_('school',this.value)"><label>יישוב *</label><input value="${E(g.city)}" oninput="g_('city',this.value)"><label>שכבת גיל</label><select onchange="g_('grade',this.value)">${GR.map(x=>`<option ${x===g.grade?"selected":""}>${x}</option>`).join("")}</select><label>שם הרכזת/הרכז</label><input value="${E(g.coord)}" oninput="g_('coord',this.value)"><label>שם המשחק</label><input value="${E(g.title)}" oninput="g_('title',this.value)"><label>מספר תחנות</label><select onchange="g_('n',+this.value)">${[3,4,5,6,7,8,9,10,11,12].map(x=>`<option ${x===(g.n||g.st.length||6)?"selected":""}>${x}</option>`).join("")}</select><label>לוגו בית הספר</label><input type="file" accept="image/*" onchange="logo(event)">${logoH()}`;
+  if(S.step===2){h+=`<p>בחרו ${g.n||6} תחנות (${g.st.length} נבחרו). הסדר נקבע לפי סדר הבחירה, ואפשר לשנות בחצים.</p><div class="chips">${PLACES.map(p=>`<button class="chip ${g.st.some(s=>s.place===p)?"on":""}" onclick="addPlace('${p}')">${p}</button>`).join("")}</div><label>מקום חופשי</label><div style="display:flex;gap:6px"><input id="fp" placeholder="למשל: הספסל הכחול"><button class="btn" onclick="newPlace()">הוספה</button></div>`;
+   g.st.forEach((s,i)=>h+=`<div class="card"><span class="num">${i+1}</span> <b>${E(s.place)}</b> <button class="btn s w" onclick="mv(${i},-1)">▲</button><button class="btn s w" onclick="mv(${i},1)">▼</button><button class="btn s w" onclick="del(${i})">🗑</button><label>תיאור מדויק (רמז למציאת המקום)</label><input value="${E(s.desc)}" oninput="upd(${i},'desc',this.value)" placeholder="הספסל הכחול ליד הכניסה לספרייה"></div>`)}
+  if(S.step===3)h+=`<p>המערכת יצרה משימה לכל תחנה. אפשר לערוך, להחליף ולסיים. משימות חיפוש דורשות השלמה של מידע מקומי על ידי הרכזת.</p>${g.st.map((s,i)=>stCard(s,i)).join("")}`;
+  h+=`<p class="err">${E(S.err)}</p><button class="btn w" onclick="S.step>1?(S.step--,R()):go('home')">חזרה</button><button class="btn g" onclick="next()">${S.step===3?"לתצוגה מקדימה ✔":"הבא"}</button></div>`}
+ if(S.v==="game"){h=`<div class="hero" style="padding:16px">${logoH()}<h2>${E(g.title)}</h2><p>${E(g.school)} · ${E(g.city)} · שכבה ${E(g.grade)}</p></div><div class="card"><button class="btn big o" onclick="S.p=0;S.done=[];S.msg='';S.bad=-1;go('play')">▶ משחק דיגיטלי</button><button class="btn" onclick="prnt('book')">🖨 חוברת מלאה</button><button class="btn" onclick="prnt('cards')">🖨 כרטיסי תחנות</button><button class="btn" onclick="prnt('ans')">🖨 דף תשובות</button><button class="btn w" onclick="exp()">⬇ שמירה לקובץ</button><button class="btn w" onclick="go('wiz',3)">✏ עריכה</button><button class="btn w" onclick="go('home')">בית</button><p style="font-size:.85rem">להפקת PDF: בחלון ההדפסה בחרו "שמירה כ־PDF". המשחק נשמר אוטומטית בדפדפן זה.</p></div>${g.st.map((s,i)=>stCard(s,i,1)).join("")}`}
+ if(S.v==="play"){const n=g.st.length;if(S.p>=n){h=`<div class="card cert pop"><h1>🏆 אלופי המסלול הבטוח</h1><p>תעודה לתלמיד/ה</p><input placeholder="הקלידו שם" style="max-width:300px;text-align:center"><p>${E(g.school)} · ${E(g.title)}</p><p>סיימתם את כל ${n} התחנות!</p><button class="btn" onclick="window.print()">הדפסה</button><button class="btn w" onclick="go('game')">חזרה</button></div>`;
+   document.getElementById("print").innerHTML=""}
+  else{const s=g.st[S.p],t=s.task,d=S.done[S.p];h=`<div class="bar"><i style="width:${S.p/n*100}%"></i></div><p>תחנה ${S.p+1} מתוך ${n}</p><div class="card pop"><span class="num">${S.p+1}</span> <h2 style="display:inline">${E(s.place)}</h2>${s.desc?`<p>🔎 ${E(s.desc)}</p>`:""}<span class="tag k-${t.kind}">${KN[t.kind]}</span><h3>${E(t.title)}</h3><p style="font-size:1.1rem">${E(t.text)}</p>${t.opts?t.opts.map((o,k)=>`<button class="btn w opt ${d&&k===t.ci?"ok":S.bad===k&&!d?"no":""}" onclick="pick(${S.p},${k})">${E(o)}</button>`).join(""):(d?"":`<button class="btn g" onclick="fin()">סיימנו את המשימה ✔</button>`)}<p class="pop" style="font-weight:700">${S.msg||""}</p>${d?`<p>💡 <b>הידעת?</b> ${E(t.fact)}</p><button class="btn o" onclick="nextSt()">${S.p+1===n?"לתעודה 🏆":"לתחנה הבאה ➜"}</button>`:""}</div><button class="btn w s" onclick="go('game')">יציאה</button>`}}
+ a.innerHTML=h}
+function g_(k,v){S.g[k]=v;save()}
+function stCard(s,i,ro){const t=s.task;if(ro)return`<div class="card"><span class="num">${i+1}</span> <b>${E(s.place)}</b> <span class="tag k-${t.kind}">${KN[t.kind]}</span><p><b>${E(t.title)}:</b> ${E(t.text)}</p></div>`;
+ return`<div class="card"><span class="num">${i+1}</span> <b>${E(s.place)}</b> <span class="tag k-${t.kind}">${KN[t.kind]}</span> <button class="btn s o" onclick="regen(${i})">🔄 החלפה</button><button class="btn s w" onclick="mv(${i},-1)">▲</button><button class="btn s w" onclick="mv(${i},1)">▼</button><button class="btn s w" onclick="del(${i})">🗑</button><label>כותרת</label><input value="${E(t.title)}" oninput="upd(${i},'title',this.value)"><label>משימה</label><textarea oninput="upd(${i},'text',this.value)">${E(t.text)}</textarea><label>תשובה (למורה)</label><input value="${E(t.answer)}" oninput="upd(${i},'answer',this.value)"><label>הידעת?</label><input value="${E(t.fact)}" oninput="upd(${i},'fact',this.value)"></div>`}
+R();
+</script>
+</body>
+</html>
